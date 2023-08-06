@@ -151,6 +151,9 @@ describe("Ballot", async () => {
     });
   });
 
+
+  
+
   describe("when an account other than the chairperson interacts with the giveRightToVote function in the contract", async () => {
     // TODO
     it("should revert", async () => {
