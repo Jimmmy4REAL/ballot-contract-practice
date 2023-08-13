@@ -19,16 +19,22 @@ contract TokenizedBallot  {
     // A dynamically-sized array of `Proposal` structs.
     Proposal[] public proposals;
     uint256 public targetBlockNumber;
+    uint256 public endDate;
+    bool public hasEnded;
 
     /// Create a new ballot to choose one of `proposalNames`.
-    constructor(bytes32[] memory proposalNames, address _tokenContract, uint256 _targetBlockNumber) {
+    /// Choses a `_targetBlockNumber`from where to count the votes.
+    /// Decides end of the voting.
+    constructor(bytes32[] memory proposalNames, address _tokenContract, uint256 _targetBlockNumber, uint256 _endVoting) {
+        require(_targetBlockNumber < block.timestamp);
+        require(_endVoting > block.timestamp);
         tokenContract = IMyToken(_tokenContract);
         targetBlockNumber = _targetBlockNumber;
+        endDate = block.timestamp + _endVoting;
         for (uint i = 0; i < proposalNames.length; i++) {
             proposals.push(Proposal({name: proposalNames[i], voteCount: 0}));
         }
     }
-
 
     function vote(uint proposal, uint256 amount) external {
         require(votingPower(msg.sender) >= amount, "Trying to vote more than allowed");
@@ -39,7 +45,6 @@ contract TokenizedBallot  {
 
     function votingPower(address account) public view returns (uint256) {
         return tokenContract.getPastVotes(account, targetBlockNumber) - votingPowerSpent[account];
-
 
     }
 
@@ -53,9 +58,11 @@ contract TokenizedBallot  {
         }
     }
 
-    function winnerName() external view
-            returns (bytes32 winnerName_)
-    {
-        winnerName_ = proposals[winningProposal()].name;
+    function winnerName() external view returns (bytes32 winnerName_) {
+        if (block.timestamp == endDate) {
+            winnerName_ = proposals[winningProposal()].name;
+            hasEnded == true;
+        }
+
     }
 } 
