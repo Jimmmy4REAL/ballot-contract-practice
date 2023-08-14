@@ -58,7 +58,6 @@ async function main() {
     const votingPower2 = await contract.getVotes(acc2.address);
     console.log(`Account ${acc2.address} has ${votingPower2.toString()} power of votes\n`);
 
-
     // Check past voting power
     const lastBLock = await ethers.provider.getBlock("latest");
     const lastBLockNumber = lastBLock?.number ?? 0;
