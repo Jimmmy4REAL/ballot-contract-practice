@@ -10,21 +10,19 @@ const PROPOSAL_NAMES = [
   "Cookies",
   "Mint",         
   "Mango",            
+
 ];
 
 describe("Tokenized Ballot Tests", async () => {
   let MyERC20Contract: MyToken;
   let BallotContract: TokenizedBallot;
-
-  let deployer: HardhatEthersSigner;
-  let acc1: HardhatEthersSigner;
-  let acc2: HardhatEthersSigner;
-  let acc3: HardhatEthersSigner;
   let endTime: 1505304000;
 
-  async function deployContractsFixture(deployer: HardhatEthersSigner) {
+  const [deployer, acc1, acc2, acc3] = await ethers.getSigners();
 
+  async function deployContractsFixture() {
     // Deploy MyToken Contract
+
     const MyERC20ContractFactory = await ethers.getContractFactory("MyToken");
     const MyERC20Contract_ = await MyERC20ContractFactory.deploy();
     await MyERC20Contract_.waitForDeployment();
@@ -64,28 +62,19 @@ describe("Tokenized Ballot Tests", async () => {
         endTime
         );
     await BallotContract_.waitForDeployment();
-    
-        return {
-          MyERC20Contract_,
-          BallotContract_,
-        };
+    return {
+      MyERC20Contract_,
+      BallotContract_,
       };
+    }
 
-  beforeEach(async () => {
-    [acc1, acc2, acc3] = await ethers.getSigners();
-    const { MyERC20Contract_, BallotContract_ } = await deployContractsFixture(deployer);
-    MyERC20Contract = MyERC20Contract_;
-    BallotContract = BallotContract_;
-  });
-
-
-  it("should have 6 ETH total supply after minting", async () => {
+  it("should have 6 ETH total supply after minting", async function () {
     const totalSupplyBigNumber = await MyERC20Contract.totalSupply();
     const expectedTokenValue = ethers.parseUnits("6", "ether");
     expect(totalSupplyBigNumber).to.eq(expectedTokenValue);
   });
 
-  it("Can delegate to self or other accounts", async () => {
+  it("Can delegate to self or other accounts", async function () {
     // acc1 delegates all voting power to acc2
     const delegating = await MyERC20Contract.connect(acc1).delegate(acc2.getAddress());
     await delegating.wait();
@@ -109,5 +98,5 @@ describe("Tokenized Ballot Tests", async () => {
     // Expect proposal to win = 2
     const winningProposal = await BallotContract.winningProposal();
     expect(winningProposal).to.eq(2);
-  });
+  })
 });

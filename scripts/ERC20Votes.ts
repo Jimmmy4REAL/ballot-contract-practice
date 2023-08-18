@@ -7,7 +7,7 @@ const hre = require("hardhat");
 
 
 async function main() {
-    const [deployer, acc1, acc2] = await ethers.getSigners();
+    const [deploy, acc1, acc2] = await ethers.getSigners();
     const contractFactory = new MyToken__factory(deployer);
     const contract = await contractFactory.deploy();
     await contract.waitForDeployment();
@@ -66,9 +66,7 @@ async function main() {
         const pastVotes = await contract.getPastVotes(acc1.address, index);
         console.log(`Account ${acc1.address} had ${pastVotes.toString()} units of voting power at block ${index}\n`);
     }
-
-
-    }
+}
 
 main().catch((error) => {
     console.error(error); 
