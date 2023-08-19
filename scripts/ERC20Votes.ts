@@ -7,7 +7,7 @@ const hre = require("hardhat");
 
 
 async function main() {
-    const [deploy, acc1, acc2] = await ethers.getSigners();
+    const [deployer, acc1, acc2] = await ethers.getSigners();
     const contractFactory = new MyToken__factory(deployer);
     const contract = await contractFactory.deploy();
     await contract.waitForDeployment();

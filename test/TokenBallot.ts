@@ -18,10 +18,10 @@ describe("Tokenized Ballot Tests", async () => {
   let BallotContract: TokenizedBallot;
   let endTime: 1505304000;
 
-  const [deployer, acc1, acc2, acc3] = await ethers.getSigners();
 
   async function deployContractsFixture() {
     // Deploy MyToken Contract
+    let [deployer, acc1, acc2, acc3] = await ethers.getSigners();
 
     const MyERC20ContractFactory = await ethers.getContractFactory("MyToken");
     const MyERC20Contract_ = await MyERC20ContractFactory.deploy();
@@ -69,7 +69,8 @@ describe("Tokenized Ballot Tests", async () => {
     }
 
   it("should have 6 ETH total supply after minting", async function () {
-    const totalSupplyBigNumber = await MyERC20Contract.totalSupply();
+    const  { MyERC20Contract_ } = await loadFixture(deployContractsFixture);
+    const totalSupplyBigNumber = await MyERC20Contract_.totalSupply();
     const expectedTokenValue = ethers.parseUnits("6", "ether");
     expect(totalSupplyBigNumber).to.eq(expectedTokenValue);
   });

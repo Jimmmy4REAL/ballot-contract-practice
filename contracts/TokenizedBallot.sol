@@ -63,6 +63,10 @@ contract TokenizedBallot  {
             winnerName_ = proposals[winningProposal()].name;
             hasEnded == true;
         }
+    }
 
+    // Function to querry on chain
+    function votingEnded() public view returns (bool) {
+        return hasEnded;
     }
 } 

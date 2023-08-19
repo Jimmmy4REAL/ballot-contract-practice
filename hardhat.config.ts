@@ -6,7 +6,7 @@ const config: HardhatUserConfig = {
   networks: {
     sepolia: {
       url: `https://sepolia.gateway.pokt.network/v1/lb/2a2bd2f3`
-      accounts: [c248bf0cc18188b166501ca9f3c5080ab2907ea04233e14451b70c294e56c210]
+
     }
   }
 };
