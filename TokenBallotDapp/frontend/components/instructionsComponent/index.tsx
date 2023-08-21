@@ -1,7 +1,8 @@
 import styles from "./instructionsComponent.module.css";
 import { useAccount, useBalance, useContractRead, useNetwork, useSignMessage } from "wagmi";
 import { useState } from "react";
-
+// need to reconfig this side - > simplify
+// not been add <RandomProfile></RandomProfile>
 export default function InstructionsComponent() {
   return (
     <div className={styles.container}>
@@ -11,7 +12,11 @@ export default function InstructionsComponent() {
         </div>
       </header>
       <p className={styles.get_started}>
+        
         <PageBody></PageBody>
+        <WalletInfo></WalletInfo>
+        <TokenAddressFromApi></TokenAddressFromApi>
+        <RequestTokenToBeMinted></RequestTokenToBeMinted>
       </p>
     </div>
   );
@@ -35,6 +40,7 @@ function WalletInfo() {
         <p>Connected to the network {chain?.name}</p>
         <WalletAction></WalletAction>
         <WalletBalance address={address}></WalletBalance>
+        <RequestTokenToBeMinted></RequestTokenToBeMinted>
         <App></App>
       </div>
     );
@@ -104,28 +110,79 @@ function WalletBalance(params: { address: `0x${string}` }) {
 }
 
 // tokenName \ tokenBalance \ randomProfile
-function randomProfile(){
+// function randomProfile(){
+//   const [data,setData] = useState<any>(null);
+//   const [isLoading,setLoading] = useState(true);
+//   useEffect(() =>{
+//     fetch('httpL//randomuser.me/api')
+//     .then((res) => res.json())
+//     .then((data) => {
+//       setData(data.results[0]);
+//       setLoading(false);
+//     });
+//   }, []);
+
+//   if (isLoading) return <p>Loading profile info...</p>;
+//   if (!data) return <p>no profile data</p>;
+
+//   return <div>
+//     <h1>
+//       Name: {data.name.tile}{data.name.first}{data.name.last}
+//     </h1>
+//     <p>email: {data.email</p>
+//   </div>
+// }
+
+function TokenAddressFromApi(){
   const [data,setData] = useState<any>(null);
   const [isLoading,setLoading] = useState(true);
-  useEffect(() =>{
-    fetch('httpL//randomuser.me/api')
+
+  useEffect(() => {
+    fetch("http://localhost:3001/get-address")
     .then((res) => res.json())
-    .then((data) => {
-      setData(data.results[0]);
+    .then((data) = > {
+      setData(data);
       setLoading(false);
     });
-  }, []);
+  },[]);
+  if (isLoading) return <p>loading token address from api ...</p>
+  if (!data) return <p>no answer from api</p>
+};
 
-  if (isLoading) return <p>Loading profile info...</p>;
-  if (!data) return <p>no profile data</p>;
+function RequestTokenToBeMinted(params:{address: `0x${string}`}){
+  const [data,setData] = useState<any>(null);
+  const [isLoading,setLoading] = useState(false);
 
-  return <div>
-    <h1>
-      Name: {data.name.tile}{data.name.first}{data.name.last}
-    </h1>
-    <p>email: {data.email</p>
-  </div>
+  if (isLoading) return <p>requesting token address from api ...</p>;
+  
+  const requestOptions ={
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({address:params.address}), 
+  };
+
+  if (!data) return (
+  <button>disabled = (isLoading) 
+    onClick=(() => {
+        fetch("http://localhost:3001/mint-tokens",requestOptions)
+        .then((res) => res.json())
+        .then((data) = > {
+          setData(data);
+          setLoading(false);
+    });
+  })
+  request tokens
+    </button>
+    );
+  
+  return (
+    <div>
+      <p>mint sucess: {data.sucess} ? 'worker':'failed'</p>
+      <p>transaction hash: {data.txHash}</p>
+    </div>
+  );
 }
+
 function App() {
   const { data, isError, isLoading } = useContractRead({
     address: '',
